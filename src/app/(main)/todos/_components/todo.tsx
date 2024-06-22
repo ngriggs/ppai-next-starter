@@ -1,5 +1,6 @@
 "use client";
 
+//@ts-ignore
 import { Todo } from "@/db/schema";
 import { TrashIcon } from "lucide-react";
 import { useTransition } from "react";
