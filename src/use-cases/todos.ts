@@ -8,7 +8,7 @@ import {
   getTodos,
 } from "@/data-access/todos";
 
-const TODO_LIMIT = 1;
+const TODO_LIMIT = 10;
 
 export async function createTodoUseCase(userId: string, text: string) {
   const isSubscribed = await isUserSubscribed(userId);
@@ -18,7 +18,7 @@ export async function createTodoUseCase(userId: string, text: string) {
     console.log({ total });
     if (total >= TODO_LIMIT) {
       throw new Error(
-        "Todo limit reached - Upgrade to premium to add more todos"
+        "Todo limit reached - Upgrade to premium to add more todos",
       );
     }
   }
@@ -45,7 +45,7 @@ export async function deleteTodoUseCase(userId: string, todoId: string) {
 export async function setTodoCompleteStatusUseCase(
   userId: string,
   todoId: string,
-  isCompleted: boolean
+  isCompleted: boolean,
 ) {
   const accessObj = await getTodoAccess(userId, todoId);
 
