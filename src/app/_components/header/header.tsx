@@ -44,6 +44,9 @@ export async function Header() {
         <div className="flex justify-between gap-4">
           <SignedIn>
             <Button variant={"secondary"} asChild>
+              <Link href="/knowledgebase">Knowledgebase</Link>
+            </Button>
+            <Button variant={"secondary"} asChild>
               <Link href="/todos">Manage Todos</Link>
             </Button>
           </SignedIn>

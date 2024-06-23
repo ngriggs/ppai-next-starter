@@ -45,7 +45,7 @@ export const accounts = pgTable(
   },
   (account) => ({
     primaryKey: [account.provider, account.providerAccountId],
-  })
+  }),
 );
 
 export const sessions = pgTable("session", {
@@ -65,7 +65,7 @@ export const verificationTokens = pgTable(
   },
   (vt) => ({
     primaryKey: [vt.identifier, vt.token],
-  })
+  }),
 );
 
 /**
@@ -98,6 +98,21 @@ export const subscriptions = pgTable("subscriptions", {
   stripeCurrentPeriodEnd: timestamp("stripeCurrentPeriodEnd", {
     mode: "string",
   }).notNull(),
+});
+
+export const userFiles = pgTable("user_files", {
+  id: uuid("id")
+    .notNull()
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  fileName: text("file_name").notNull(),
+  fileUrl: text("file_url").notNull(),
+  uploadedAt: timestamp("uploaded_at")
+    .notNull()
+    .default(sql`now()`),
 });
 
 export type Todo = typeof todos.$inferSelect;
