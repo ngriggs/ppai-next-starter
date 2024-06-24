@@ -19,6 +19,12 @@ import { ModeToggle } from "../mode-toggle";
 import FeedbackButton from "./feedback";
 import { Links } from "./links";
 import Image from "next/image";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Menu, X } from "lucide-react";
 
 export async function Header() {
   const { user } = await getSSRSession();
@@ -38,10 +44,12 @@ export async function Header() {
             <span className="font-bold">StarterKit</span>
           </Link>
 
-          <Links />
+          <div className="hidden md:flex">
+            <Links />
+          </div>
         </div>
 
-        <div className="flex justify-between gap-4">
+        <div className="hidden md:flex justify-between gap-4 items-center">
           <SignedIn>
             <Button variant={"secondary"} asChild>
               <Link href="/knowledgebase">Knowledgebase</Link>
@@ -90,6 +98,51 @@ export async function Header() {
               <Link href="/api/auth/signin/google">Sign In</Link>
             </Button>
           </SignedOut>
+        </div>
+
+        <div className="flex md:hidden items-center">
+          <Popover>
+            <PopoverTrigger>
+              <Menu className="w-6 h-6" />
+            </PopoverTrigger>
+            <PopoverContent className="w-screen">
+              <div className="flex flex-col p-4 gap-2">
+                <Links />
+                <SignedIn>
+                  <Button variant={"secondary"} asChild>
+                    <Link href="/knowledgebase">Knowledgebase</Link>
+                  </Button>
+                  <Button variant={"secondary"} asChild>
+                    <Link href="/todos">Manage Todos</Link>
+                  </Button>
+                </SignedIn>
+                <Unsubscribed>
+                  <UpgradeButton />
+                </Unsubscribed>
+                <FeedbackButton />
+                <ModeToggle />
+                <SignedIn>
+                  <Link
+                    href="/settings"
+                    className="flex gap-2 items-center py-2"
+                  >
+                    <Settings2Icon className="w-4 h-4" /> Settings
+                  </Link>
+                  <Link
+                    href="/api/auth/signout?callbackUrl=/"
+                    className="flex gap-2 items-center py-2"
+                  >
+                    <LogOut className="w-4 h-4" /> Sign Out
+                  </Link>
+                </SignedIn>
+                <SignedOut>
+                  <Button asChild>
+                    <Link href="/api/auth/signin/google">Sign In</Link>
+                  </Button>
+                </SignedOut>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </div>
