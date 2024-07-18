@@ -110,6 +110,7 @@ export const userFiles = pgTable("user_files", {
     .references(() => users.id, { onDelete: "cascade" }),
   fileName: text("file_name").notNull(),
   fileUrl: text("file_url").notNull(),
+  extractedText: text("extracted_text").notNull(),
   uploadedAt: timestamp("uploaded_at")
     .notNull()
     .default(sql`now()`),

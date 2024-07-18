@@ -44,17 +44,83 @@ export default function FileUploadClient({
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const fileName = file.name;
-      const fileUrl = await uploadFile(file, tags[i], (prog: number) => {
-        newProgress[i] = prog;
-        setProgress([...newProgress]);
-      });
-      await saveFileMetadata({ userId, fileName, fileUrl });
+      try {
+        const fileUrl = await uploadFile(file, tags[i], (prog: number) => {
+          newProgress[i] = prog;
+          setProgress([...newProgress]);
+        });
+
+        // Extract text from the PDF
+        const extractedText = await extractTextFromPDF(file);
+
+        await saveFileMetadata({ userId, fileName, fileUrl, extractedText });
+      } catch (error) {
+        console.error("Error during file upload or metadata saving:", error);
+        alert("Failed to upload file: " + fileName);
+        return; // Stop further uploads
+      }
     }
 
     setLoading(false);
     setFiles([]);
     setTags([]);
     fetchUploadedFiles(); // Fetch the list of uploaded files after upload
+  };
+
+  const extractTextFromPDF = async (pdfFile: File) => {
+    try {
+      console.log(`Starting text extraction for PDF: ${pdfFile.name}`);
+
+      const formData = new FormData();
+      formData.append("pdfFile", pdfFile);
+
+      const response = await fetch("/api/extract-text-pdf", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Extract text error data:", errorData);
+        throw new Error(errorData.error || "Failed to extract text from PDF");
+      }
+
+      const data = await response.json();
+      console.log("Extracted Text Data:", data); // Log the entire data object
+      return data.extractedText;
+    } catch (error) {
+      console.error("Error extracting text from PDF:", error);
+      throw error;
+    }
+  };
+
+  const saveExtractedText = async (data: {
+    userId: string;
+    fileName: string;
+    fileUrl: string;
+    extractedText: string;
+  }) => {
+    try {
+      const response = await fetch("/api/save-extracted-text", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Save extracted text error data:", errorData);
+        throw new Error("Failed to save extracted text");
+      }
+
+      const result = await response.json();
+      console.log("Save Result:", result.message); // Log the save result
+    } catch (error) {
+      console.error("Error saving extracted text:", error);
+      throw error;
+    }
   };
 
   const uploadFile = async (
@@ -90,6 +156,7 @@ export default function FileUploadClient({
     userId: string;
     fileName: string;
     fileUrl: string;
+    extractedText: string;
   }) => {
     await fetch("/api/save-file-metadata", {
       method: "POST",

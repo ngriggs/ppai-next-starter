@@ -19,7 +19,6 @@ export async function GET(request: NextRequest) {
       .from(userFiles)
       .where(eq(userFiles.userId, userId))
       .execute();
-    console.log("Fetched files:", files);
     return NextResponse.json(files);
   } catch (error) {
     console.error(error);

@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { userId, fileName, fileUrl } = await request.json();
+    const { userId, fileName, fileUrl, extractedText } = await request.json();
 
     await database
       .insert(userFiles)
@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
         userId,
         fileName,
         fileUrl,
+        extractedText,
       })
       .execute();
 
